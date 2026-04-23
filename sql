@@ -1,69 +1,67 @@
-create table computers (
-id Serial primary key,
-brendi varchar(50),
-model varchar(50) not null,
-cpu varchar(50),
-ram int,
-xotira varchar(50),
-narxi decimal(10,2) not null check (narxi >= 700),
-soni int
+CREATE TABLE computers (
+id SERIAL PRIMARY KEY,
+brendi VARCHAR(50),
+model VARCHAR(50) NOT NULL,
+cpu VARCHAR(50),
+ram INT,
+xotira VARCHAR(50),
+narxi DECIMAL(10,2) NOT NULL CHECK (narxi >= 700),
+soni INT
 );
 
-create table users (
-id Serial primary key,
-ism_familiya varchar(100) not null unique,
-telefon_raqami varchar(20),
-sohasi varchar(50),
-qurilmaID int,
-foreign key (qurilmaID) references computers(id)
+CREATE TABLE users (
+id SERIAL PRIMARY KEY,
+ism_familiya VARCHAR(100) NOT NULL UNIQUE,
+telefon_raqami VARCHAR(20),
+sohasi VARCHAR(50),
+qurilmaID INT,
+FOREIGN KEY (qurilmaID) REFERENCES computers(id)
 );
 
+INSERT INTO computers (brendi, model, cpu, ram, xotira, narxi, soni)
+VALUES
+('HP', 'EliteBook 840', 'Intel i5', 8, '256', 800.00, 20),
+('Dell', 'XPS 13', 'Intel i7', 16, '512', 1200.00, 10),
+('Apple', 'MacBook Pro', 'M2', 16, '1000', 1800.00, 15),
+('Lenovo', 'ThinkPad L15', 'AMD Ryzen 5', 8, '512', 850.00, 12),
+('Asus', 'ZenBook 14', 'Intel i7', 16, '1000', 1100.00, 8);
 
-insert into computers(brendi,model,cpu,ram,xotira,narxi,soni)
-values('HP','EliteBook 840','Intel i5',8,'256',800.00,20),
-('Dell','XPS 13','Intel i7',16,'512',1200.00,10),
-('Apple','MacBook Pro','M2',16,'1000',1800.00,15),
-('Lenovo','ThinkPad L15','AMD Ryzen 5',8,'512',850.00,12),
-('Asus','ZenBook 14','Intel i7',16,'1000',1100.00,8);
+INSERT INTO users (ism_familiya, telefon_raqami, sohasi, qurilmaID)
+VALUES
+('Ali Valiyev', '+998901234567', 'IT', 2),
+('Zuhra Karimova', '+998931112233', 'Accounting', 1),
+('Sardor Rahimzoda', '+998948887766', 'HR', 4),
+('Olim Toshmatov', '+998993332211', 'Design', 3);
 
+ALTER TABLE computers RENAME COLUMN ram TO tezkor_xotira;
 
-insert into users(ism_familiya,telefon_raqami,sohasi,qurilmaID)
-values('Ali Valiyev', '+998901234567','IT',2),
-('Zuhra Karimova','+998931112233','Accouting',1),
-('Sardor Rahimzoda','+998948887766','HR',4),
-('Olim Toshmatov','+998993332211','Design',3);
+ALTER TABLE users RENAME COLUMN sohasi TO soha;
 
-alter table computers 
-rename column ram to tezkor_xotira;
+ALTER TABLE users RENAME TO foydalanuvchilar;
 
-alter table users
-rename column sohasi to soha;
+ALTER TABLE foydalanuvchilar DROP COLUMN telefon_raqami;
 
-alter table users 
-rename to foydalanuvchilar;
+SELECT
+f.ism_familiya,
+c.brendi,
+c.soni
+FROM foydalanuvchilar f
+JOIN computers c ON f.qurilmaID = c.id;
 
-alter table foydalanuvchilar
-drop column telefon_raqami;
+SELECT
+c.model,
+c.xotira
+FROM foydalanuvchilar f
+JOIN computers c ON f.qurilmaID = c.id
+WHERE f.soha = 'Design';
 
-select
-	f.ism_familiya,
-	c.brendi,
-	c.soni
-from foydalanuvchilar f
-join computers c on f.qurilmaID=c.id;
+SELECT
+f.*,
+c.narxi
+FROM foydalanuvchilar f
+JOIN computers c ON f.qurilmaID = c.id
+WHERE c.narxi = (SELECT MAX(narxi) FROM computers);
 
-select c.model,c.xotira
-from foydalanuvchilar f
-join computers c on f.qurilmaID = c.id
-where f.soha = 'Design';
-
-select f.*,c.narxi
-from foydalanuvchilar f
-join computers c on f.qurilmaID = c.id 
-where c.narxi = (select max(narxi) from computers);
-
-select count(*) as xotira_512_soni
-from computers
-where xotira = '512';
-
-
+SELECT COUNT(*) AS xotira_512_soni
+FROM computers
+WHERE xotira = '512';
